@@ -38,9 +38,16 @@ const hashChecksByLabel = checks => {
   return checkedMap
 }
 
+const getPhase4Status = userIds =>
+  knex
+    .select('*')
+    .from('phase_4_status')
+    .whereIn('user_id', userIds)
+
 module.exports = {
   getChecksForUserAndLabels,
   getCheckLogsForUsers,
+  getPhase4Status,
 }
 
 

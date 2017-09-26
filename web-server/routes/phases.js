@@ -1,11 +1,13 @@
+const bodyParser = require('body-parser')
 const queries = require('../../database/queries')
+const commands = require('../../database/commands')
+const urlEncodedBodyParser = bodyParser({ urlencoded: true })
 
 module.exports = app => {
 
   app.get('/phases', app.ensureTrailingSlash, (request, response, next) => {
     response.renderMarkdownFile(`/phases/README.md`)
   })
-
 
   app.get('/phases/:phaseNumber', app.ensureTrailingSlash)
 
@@ -46,6 +48,24 @@ module.exports = app => {
 
   app.get('/phases/3/goals', (request, response, next) => {
     response.render('phases/goals', {title: 'Phase 3 Goals'})
+  })
+
+  app.get('/phases/4/status', (request, response, next) => {
+    const userId = request.user.id
+    request.getPhase4UsersWithStatus()
+      .then(users => {
+        response.render('phases/phase4status', {title: 'Phase 4 Status', users, userId})
+      })
+      .catch(next)
+  })
+
+  app.post('/phases/4/status', urlEncodedBodyParser, (request, response, next) => {
+    const user_id = request.user.id
+    const {status} = request.body
+    commands.setStatus({user_id, status})
+      .then(() => {
+        response.redirect('/phases/4/status')
+      })
   })
 
   app.use('/phases/:phaseNumber/dashboard', app.ensureAdmin)

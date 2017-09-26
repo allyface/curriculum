@@ -1,0 +1,27 @@
+extends ../layout
+
+block content
+  button.btn.btn-primary.pull-right(type='button' data-toggle='modal' data-target='#statusModal') Update Status
+  h3 Phase #{phase.number} Status Reports
+  .container
+    .row
+    for user in users
+      .col-md-6.users-status
+        .users-grid-member.well(data-user=JSON.stringify(user))
+          a(href='/users/'+user.handle)
+            .users-grid-member-name= user.name
+            .users-grid-member-handle= user.handle
+            .users-grid-member-avatar
+              img(src=user.avatarUrl)
+        .users-status-content
+          p= user.status
+      .modal.fade#statusModal(role='dialog')
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button' data-dismiss='modal') &times;
+              h4.modal-title Update Your Status
+            .modal-body
+              form(action='/phases/4/status' method='post')
+                textarea(name='status' rows='6' cols='70')
+                button.btn.btn-default(type='submit') Update
